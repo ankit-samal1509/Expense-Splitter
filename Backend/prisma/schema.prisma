@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model User {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(255)
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(100)
+  description String?  @db.Text
+  currency    String   @default("INR") @db.VarChar(10)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  memberships GroupMember[]
+  expenses    Expense[]
+
+  @@map("groups")
+}
+
+model Member {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(100)
+  email     String?  @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  memberships  GroupMember[]
+  expensesPaid Expense[]      @relation("PaidBy")
+  splits       ExpenseSplit[]
+
+  @@map("members")
+}
+
+// Junction table — Member <-> Group
+model GroupMember {
+  groupId  String   @map("group_id")
+  memberId String   @map("member_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  group  Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, memberId])
+  @@index([memberId])
+  @@map("group_members")
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  groupId     String   @map("group_id")
+  description String   @db.VarChar(255)
+  amount      Decimal  @db.Decimal(12, 2)
+  paidById    String   @map("paid_by")
+  category    String   @default("Other") @db.VarChar(50)
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  group  Group          @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  paidBy Member         @relation("PaidBy", fields: [paidById], references: [id])
+  splits ExpenseSplit[] 
+
+  @@index([groupId])
+  @@index([paidById])
+  @@map("expenses")
+}
+
+model ExpenseSplit {
+  expenseId String  @map("expense_id")
+  memberId  String  @map("member_id")
+  share     Decimal @db.Decimal(12, 2)
+
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  member  Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@id([expenseId, memberId])
+  @@index([memberId])
+  @@map("expense_splits")
+}
+
+
