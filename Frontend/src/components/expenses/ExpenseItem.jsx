@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ChevronDown, ChevronUp, Receipt, Calendar } from 'lucide-react';
 import SplitBreakdown from './SplitBreakdown';
-import { format } from 'date-fns'; // Optional: npm install date-fns
+import { format } from 'date-fns'; 
 
 const ExpenseItem = ({ expense }) => {
   const [isExpanded, setIsExpanded] = useState(false);

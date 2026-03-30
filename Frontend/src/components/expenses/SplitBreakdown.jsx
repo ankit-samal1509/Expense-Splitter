@@ -12,7 +12,7 @@ export default function SplitBreakdown({ splits }){
             <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
               <UserCircle2 size={16} />
             </div>
-            {/* member.name comes from the nested include in your Prisma query */}
+          
             <span className="text-sm font-medium text-slate-600">
               {split.member?.name || "Member"}
             </span>

@@ -27,7 +27,7 @@ function Navbar ({ publicView = false }) {
       <div className="flex items-center gap-4">
         {!publicView && user ? (
           <div className="flex items-center gap-3 pl-4 border-l border-slate-100">
-            /* User Info */
+            {/* User Info */}
             <div className="text-right hidden sm:block">
               <p className="text-xs font-black text-slate-800 leading-none mb-0.5">
                 {user.name}
@@ -49,15 +49,9 @@ function Navbar ({ publicView = false }) {
                 )}
               </button>
 
-              {/* Simple Hover Dropdown */}
+              {/* Hover Dropdown */}
               <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-200">
                 <div className="bg-white border border-slate-200 shadow-xl rounded-2xl p-2 w-48">
-                  <Link 
-                    to="/settings" 
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition"
-                  >
-                    <User size={16} /> Profile Settings
-                  </Link>
                   <button 
                     onClick={handleLogout}
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition"

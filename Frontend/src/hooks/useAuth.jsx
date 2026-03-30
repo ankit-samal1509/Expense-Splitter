@@ -1,5 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import axios from 'axios'
+import { createContext, useContext, useState } from 'react'
 
 const AuthContext = createContext()
 
@@ -10,30 +9,26 @@ export const AuthProvider = ({ children }) => {
   const storedToken = localStorage.getItem('token')
 
   if (storedUser && storedToken) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`
     return JSON.parse(storedUser)
   }
-
     return null
   })
 
 
   const login = (userData) => {
-    localStorage.setItem('user',  JSON.stringify(userData.user))
+    localStorage.setItem('user', JSON.stringify(userData.user))
     localStorage.setItem('token', userData.token)
-    axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`
     setUser(userData.user)
   }
 
   const logout = () => {
     localStorage.removeItem('user')
     localStorage.removeItem('token')
-    delete axios.defaults.headers.common['Authorization']
     setUser(null)
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

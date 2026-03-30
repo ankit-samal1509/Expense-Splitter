@@ -10,7 +10,6 @@ function Sidebar() {
       <nav className="flex-1 px-4 space-y-2">
         <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20}/>} label="Dashboard" />
         <SidebarLink to="/groups" icon={<Layers size={20}/>} label="My Groups" />
-        <SidebarLink to="/settings" icon={<Settings size={20}/>} label="Settings" />
       </nav>
       <div className="p-4">
         <button onClick={logout} className="flex items-center gap-3 w-full px-4 py-3 text-slate-500 hover:bg-rose-50 hover:text-rose-600 rounded-xl transition">

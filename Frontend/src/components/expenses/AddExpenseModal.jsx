@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { calculateEqualSplits } from '../../utils/splitLogic';
-import api from '../../utils/api';
+import { addExpense } from '../../api/expenseAPI';
 
 export default function AddExpenseModal({ members, groupId, onClose, onRefresh }) {
-  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     description: '',
     amount: '',
@@ -14,24 +12,22 @@ export default function AddExpenseModal({ members, groupId, onClose, onRefresh }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     
     try {
+      const memberIds = members.map(m => m.memberId);
       const payload = {
         ...form,
         groupId,
         amount: parseFloat(form.amount),
-        // Creating the ExpenseSplit array for Prisma
-        splits: calculateEqualSplits(form.amount, members)
+        // Creating the ExpenseSplit array
+        splits: memberIds
       };
 
-      await api.post('/expenses', payload);
-      onRefresh(); // Refresh the GroupDetail data
+      await addExpense(payload);
+      onRefresh(); 
       onClose();
     } catch (err) {
       alert("Error adding expense");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -70,10 +66,8 @@ export default function AddExpenseModal({ members, groupId, onClose, onRefresh }
             </select>
           </div>
           <button 
-            disabled={loading}
             className="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition disabled:opacity-50"
-          >
-            {loading ? "Processing..." : "Create Split"}
+          > Add Expense
           </button>
         </form>
       </div>

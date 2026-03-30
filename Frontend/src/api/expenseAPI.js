@@ -8,7 +8,7 @@ export const addExpense = async (expenseData) => {
    * description: string, 
    * amount: number, 
    * paidById: string, 
-   * splits: [{ memberId, share }] 
+   * splits: [ memberId, memberId, .. ] 
    * }
    */
   const res = await api.post('/expenses', expenseData);

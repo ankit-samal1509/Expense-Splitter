@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api from '../utils/api';
+import { register } from '../api/authAPI';
 
 export default function Register() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
@@ -9,11 +9,11 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      // Hits the registration endpoint
-      await api.post('/auth/register', formData);
-      navigate('/login'); // Redirect to login after successful signup
+      // registration endpoint
+      await register(formData);
+      navigate('/login');  
     } catch (err) {
-      alert("Registration failed. Email might already be in use.");
+      alert(err.response?.data?.error || 'Registration failed');
     }
   };
 

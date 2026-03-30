@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import api from '../utils/api';
+import { useAuth } from '../hooks/useAuth';
+import {login as loginUser} from '../api/authAPI';
 
 export default function Login() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
@@ -11,9 +11,9 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post('/auth/login', credentials);
-      login(res.data.user); // Save user to global context
-      navigate('/dashboard'); // Go straight to the app
+      const res = await loginUser(credentials);
+      login(res); // Save user to context
+      navigate('/dashboard'); 
     } catch (err) {
       alert("Invalid email or password");
     }

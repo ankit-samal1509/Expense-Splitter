@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { X, Plus, Trash2, Globe, Users } from 'lucide-react';
-import api from '../../utils/api';
+import { createGroup } from '../../api/groupAPI';
+import codes from 'currency-codes';
 
 const CreateGroupModal = ({ isOpen, onClose, onRefresh }) => {
   const [groupName, setGroupName] = useState('');
   const [description, setDescription] = useState('');
   const [currency, setCurrency] = useState('INR');
-  const [members, setMembers] = useState([{ name: '', email: '' }]); // Start with one empty member slot
-  const [loading, setLoading] = useState(false);
+  const allCurrencies = codes.data;
+  const [members, setMembers] = useState([{ name: '', email: '' }]); 
 
   const addMemberField = () => {
     setMembers([...members, { name: '', email: '' }]);
@@ -26,24 +27,19 @@ const CreateGroupModal = ({ isOpen, onClose, onRefresh }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
     try {
       const payload = {
         name: groupName,
         description,
         currency,
-        // The backend will use these to create 'Member' and 'GroupMember' records
         members: members.filter(m => m.name.trim() !== '') 
       };
 
-      await api.post('/groups', payload);
-      onRefresh(); // Refresh Dashboard data
+      await createGroup(payload);
+      onRefresh(); 
       onClose();
     } catch (err) {
       alert("Failed to create group. Ensure all member emails are unique.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -52,7 +48,6 @@ const CreateGroupModal = ({ isOpen, onClose, onRefresh }) => {
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
       <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-200">
-        {/* Header */}
         <div className="p-6 border-b flex justify-between items-center bg-slate-50">
           <div className="flex items-center gap-2">
             <Users className="text-indigo-600" size={24} />
@@ -62,10 +57,9 @@ const CreateGroupModal = ({ isOpen, onClose, onRefresh }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
-          {/* Basic Info */}
           <div className="space-y-4">
             <input 
-              type="text" placeholder="Group Name (e.g. Goa Trip 2026)" required
+              type="text" placeholder="Group Name" required
               className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition font-bold text-lg"
               onChange={e => setGroupName(e.target.value)}
             />
@@ -81,14 +75,15 @@ const CreateGroupModal = ({ isOpen, onClose, onRefresh }) => {
                 className="bg-transparent outline-none font-bold text-slate-700 w-full"
                 onChange={e => setCurrency(e.target.value)}
               >
-                <option value="INR">Indian Rupee (₹)</option>
-                <option value="USD">US Dollar ($)</option>
-                <option value="EUR">Euro (€)</option>
+                {allCurrencies.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.code} — {c.currency}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
-          {/* Member Management */}
           <div className="space-y-3">
             <div className="flex justify-between items-center px-1">
               <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Add Members</h3>
@@ -101,7 +96,7 @@ const CreateGroupModal = ({ isOpen, onClose, onRefresh }) => {
             </div>
 
             {members.map((member, index) => (
-              <div key={index} className="flex gap-2 animate-in slide-in-from-left-2">
+              <div key={index} className="flex gap-2">
                 <input 
                   type="text" placeholder="Name" required
                   className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm"
@@ -127,10 +122,10 @@ const CreateGroupModal = ({ isOpen, onClose, onRefresh }) => {
           </div>
 
           <button 
-            type="submit" disabled={loading}
-            className="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition disabled:opacity-50"
+            type="submit" 
+            className="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition"
           >
-            {loading ? "Creating Group..." : "Launch Group"}
+            Create Group
           </button>
         </form>
       </div>

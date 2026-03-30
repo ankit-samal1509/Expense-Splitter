@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter , Routes, Route } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
 import MainLayout from './components/layout/MainLayout';
 
@@ -9,13 +9,16 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import GroupDetail from './pages/GroupDetail';
 
+import { useAuth } from './hooks/useAuth';
+import { Navigate } from 'react-router-dom';
+
 function App() {
   const { user } = useAuth();
 
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        {/* Main Layout: No Sidebar */}
+        {/* Main Layout: Only Navbar */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
@@ -29,7 +32,7 @@ function App() {
           <Route path="/group/:id" element={<GroupDetail />} />
         </Route>
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 
